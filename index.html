@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>给你 ♥</title>
+
+<!-- Leaflet map library (CDN — works on GitHub Pages) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- self-hosted Chinese pixel font (tiny subset, lives next to this file) -->
+<link rel="preload" href="zpix-subset.woff2" as="font" type="font/woff2" crossorigin />
+
+<style>
+  @font-face {
+    font-family: "Zpix";
+    src: url("zpix-subset.woff2") format("woff2");
+    font-display: swap;
+  }
+
+  /* =========================================================
+     PIXEL / VAPORWAVE THEME
+     ========================================================= */
+  :root {
+    --cyan:   #25f4ee;
+    --pink:   #ff2e97;
+    --purple: #a24bff;
+    --yellow: #ffe14d;
+    --ink:    #f3e9ff;
+    --win-bg: #1e1140;
+    --font:   "Zpix", monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    font-family: var(--font);
+    color: var(--ink);
+    background: #0d0524;
+    overflow-x: hidden;
+    padding: 0 14px 70px;
+    -webkit-font-smoothing: none;
+    image-rendering: pixelated;
+  }
+  img, .leaflet-tile { image-rendering: pixelated; }
+
+  /* ---------- fixed vaporwave backdrop ---------- */
+  .sky {
+    position: fixed; inset: 0; z-index: -2; overflow: hidden;
+    background: linear-gradient(180deg,
+      #0d0524 0%, #2a0f52 38%, #6a1670 62%, #c02174 82%, #ff5f8d 100%);
+  }
+  .sun {
+    position: absolute; left: 50%; bottom: 34%; width: 340px; height: 340px;
+    transform: translateX(-50%);
+    background: radial-gradient(circle at 50% 50%, #ffe14d 0%, #ff8f4d 35%, #ff2e97 70%, transparent 72%);
+    border-radius: 50%; filter: blur(1px); opacity: 0.85;
+  }
+  .grid {
+    position: absolute; left: -50%; bottom: 0; width: 200%; height: 46vh;
+    background-image:
+      repeating-linear-gradient(to right,  rgba(37,244,238,0.6) 0 2px, transparent 2px 84px),
+      repeating-linear-gradient(to bottom, rgba(37,244,238,0.6) 0 2px, transparent 2px 60px);
+    transform: perspective(280px) rotateX(74deg); transform-origin: bottom center;
+    -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 85%);
+            mask-image: linear-gradient(to top, #000 10%, transparent 85%);
+  }
+  .star { position: absolute; width: 2px; height: 2px; background: #fff; opacity: .8;
+          animation: tw 2.6s infinite steps(2); }
+  @keyframes tw { 0%,100% { opacity: .15; } 50% { opacity: .95; } }
+  .pheart { position: absolute; bottom: -30px; animation: rise linear infinite; }
+  @keyframes rise { 0% { transform: translateY(0); opacity: 0; }
+                    12% { opacity: .9; } 100% { transform: translateY(-112vh); opacity: 0; } }
+
+  .scanlines {
+    position: fixed; inset: 0; z-index: 60; pointer-events: none;
+    background: repeating-linear-gradient(to bottom, rgba(0,0,0,.14) 0 1px, transparent 1px 3px);
+    opacity: .55;
+  }
+
+  .content { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding-top: 34px; }
+
+  /* =========================================================
+     RETRO WINDOWS
+     ========================================================= */
+  .window {
+    background: var(--win-bg); border: 3px solid var(--cyan); margin: 22px 0;
+    box-shadow: 7px 7px 0 rgba(0,0,0,.55), 0 0 22px rgba(37,244,238,.28);
+  }
+  .titlebar {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 9px;
+    background: linear-gradient(90deg, var(--pink), var(--purple));
+    border-bottom: 3px solid var(--cyan);
+  }
+  .titlebar .t {
+    font-size: 16px; color: #fff; text-shadow: 2px 2px 0 rgba(0,0,0,.55); letter-spacing: 1px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .btns { display: flex; gap: 5px; flex: 0 0 auto; }
+  .btns b {
+    position: relative; width: 20px; height: 20px; flex: 0 0 auto;
+    background: #d9c8ff; border: 2px solid #0d0524; box-shadow: 2px 2px 0 rgba(0,0,0,.5);
+  }
+  /* window-control icons drawn in CSS (no font glyphs needed) */
+  .btns b.min::before { content:""; position:absolute; left:3px; bottom:3px; width:10px; height:2px; background:#2a0f52; }
+  .btns b.max::before { content:""; position:absolute; left:3px; top:3px; width:10px; height:10px; border:2px solid #2a0f52; }
+  .btns b.cls::before, .btns b.cls::after {
+    content:""; position:absolute; left:7px; top:2px; width:2px; height:12px; background:#2a0f52;
+  }
+  .btns b.cls::before { transform: rotate(45deg); }
+  .btns b.cls::after  { transform: rotate(-45deg); }
+
+  .win-body { padding: 22px 18px; }
+
+  /* =========================================================
+     HERO
+     ========================================================= */
+  .hero .win-body { text-align: center; padding: 30px 18px; }
+  .hero-title {
+    font-size: clamp(30px, 10vw, 60px); line-height: 1.3; color: var(--yellow);
+    text-shadow: 3px 3px 0 var(--pink), 6px 6px 0 rgba(0,0,0,.5);
+    display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap;
+  }
+  .hero-sub { font-size: clamp(20px, 5.5vw, 30px); margin-top: 18px; color: var(--cyan); }
+
+  /* =========================================================
+     SONG
+     ========================================================= */
+  .song .win-body { text-align: center; }
+  .song p.lead { font-size: 26px; color: var(--ink); margin-bottom: 20px; }
+  .blink { animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .song-btn {
+    font-family: var(--font); font-size: clamp(18px, 5vw, 24px); color: #2a0f52; background: var(--yellow);
+    border: 3px solid #0d0524; box-shadow: 6px 6px 0 #0d0524, 0 0 18px rgba(255,225,77,.5);
+    padding: 16px 28px; cursor: pointer; display: inline-flex; align-items: center; gap: 14px;
+    transition: transform .06s steps(1), box-shadow .06s steps(1), background .1s;
+  }
+  .song-btn:hover  { background: var(--pink); color: #fff; }
+  .song-btn:active { transform: translate(6px, 6px); box-shadow: 0 0 18px rgba(255,46,151,.6); }
+  /* CSS play triangle (follows text color) */
+  .tri { width:0; height:0; border-style:solid; border-width:9px 0 9px 15px;
+         border-color:transparent transparent transparent currentColor; display:inline-block; }
+  .song-note { font-size: 22px; color: var(--cyan); margin-top: 18px; }
+  .song-note.warn { color: var(--yellow); }
+
+  /* =========================================================
+     MAP
+     ========================================================= */
+  #map { height: 340px; width: 100%; border: 3px solid #0d0524; background: #0a0a1a; }
+  .leaflet-container { background: #0a0a1a; font-family: var(--font); }
+  .leaflet-control-zoom a {
+    background: #d9c8ff !important; color: #2a0f52 !important;
+    border: 2px solid #0d0524 !important; border-radius: 0 !important; font-size: 18px !important;
+  }
+  .leaflet-bar { box-shadow: 3px 3px 0 rgba(0,0,0,.5) !important; }
+
+  .pin { text-align: center; line-height: 0; }
+  .pin .lbl {
+    display: inline-block; margin-top: 3px; line-height: 1; font-size: 13px; color: #fff;
+    background: #0d0524; border: 2px solid var(--cyan); padding: 3px 7px; white-space: nowrap;
+  }
+
+  .stats { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 20px; }
+  .panel {
+    flex: 1 1 150px; min-width: 140px; text-align: center;
+    background: #05010f; border: 2px solid var(--cyan); box-shadow: 4px 4px 0 rgba(0,0,0,.5); padding: 14px 10px;
+  }
+  .panel .cap { font-size: 17px; color: var(--pink); letter-spacing: 1px; }
+  .panel .big { font-size: 40px; line-height: 1; color: var(--cyan); margin-top: 8px;
+                text-shadow: 0 0 8px rgba(37,244,238,.6); }
+  .panel .sub { font-size: 17px; color: #b79be0; margin-top: 6px; }
+</style>
+</head>
+
+<body>
+  <div class="sky"><div class="sun"></div><div class="grid"></div></div>
+  <div class="scanlines"></div>
+
+  <div class="content">
+
+    <!-- ============ HERO ============ -->
+    <section class="window hero">
+      <div class="titlebar">
+        <span class="t">给你.EXE</span>
+        <span class="btns"><b class="min"></b><b class="max"></b><b class="cls"></b></span>
+      </div>
+      <div class="win-body">
+        <div class="hero-title" id="heroTitle">给你</div>
+        <div class="hero-sub" id="heroSub">两座城市，一颗心</div>
+      </div>
+    </section>
+
+    <!-- ============ SONG ============ -->
+    <section class="window song">
+      <div class="titlebar">
+        <span class="t">我们的歌.EXE</span>
+        <span class="btns"><b class="min"></b><b class="max"></b><b class="cls"></b></span>
+      </div>
+      <div class="win-body">
+        <p class="lead">&gt; 点击播放，想着我 <span class="blink">_</span></p>
+        <button class="song-btn" id="songBtn">
+          <span class="tri"></span><span id="songBtnLabel">播放我们的歌</span>
+        </button>
+        <div class="song-note" id="songNote">// 用网易云音乐打开</div>
+      </div>
+    </section>
+
+    <!-- ============ MAP ============ -->
+    <section class="window map">
+      <div class="titlebar">
+        <span class="t">世界地图.EXE</span>
+        <span class="btns"><b class="min"></b><b class="max"></b><b class="cls"></b></span>
+      </div>
+      <div class="win-body">
+        <div id="map"></div>
+        <div class="stats">
+          <div class="panel">
+            <div class="cap" id="p1cap">首尔</div>
+            <div class="big" id="p1clock">--:--</div>
+            <div class="sub" id="p1name">你</div>
+          </div>
+          <div class="panel">
+            <div class="cap">距离</div>
+            <div class="big" id="distKm">—</div>
+            <div class="sub">公里相隔</div>
+          </div>
+          <div class="panel">
+            <div class="cap" id="p2cap">汉堡</div>
+            <div class="big" id="p2clock">--:--</div>
+            <div class="sub" id="p2name">我</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+<script>
+/* =============================================================
+   ⚙️  CONFIG  —  EDIT THIS BLOCK ONLY
+   =============================================================
+   1) SONG:  paste your NetEase share link OR just the song id.
+   2) PEOPLE: person1 = him (Seoul), person2 = you (Hamburg).
+   3) TEXT:  change any of the messages if you like.
+   ============================================================= */
+  const CONFIG = {
+    // ---- The song (paste later) ----
+    // e.g. "https://music.163.com/song?id=1234567"  OR  "1234567"
+    songLink: "",
+
+    // ---- The two of you (names/cities shown on the map) ----
+    person1: { name: "你", city: "首尔", lat: 37.5665, lon: 126.9780, tz: "Asia/Seoul"    }, // him
+    person2: { name: "我", city: "汉堡", lat: 53.5511, lon: 9.9937,   tz: "Europe/Berlin" }, // you
+
+    // ---- Words ----
+    heroTitle: "给你",
+    heroSub:   "两座城市，一颗心",
+  };
+
+/* =============================================================
+   No need to edit below here 🙂
+   ============================================================= */
+  const $ = id => document.getElementById(id);
+
+  /* ---- pixel-art heart (8x7 bitmap) ---- */
+  const HEART_ROWS = ["01100110","11111111","11111111","11111111","01111110","00111100","00011000"];
+  function pixelHeartSVG(color, px) {
+    let rects = "";
+    HEART_ROWS.forEach((r, y) => {
+      for (let x = 0; x < r.length; x++)
+        if (r[x] === "1") rects += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
+    });
+    return `<svg width="${px*8}" height="${px*7}" viewBox="0 0 8 7" xmlns="http://www.w3.org/2000/svg" ` +
+           `shape-rendering="crispEdges" fill="${color}" style="filter:drop-shadow(2px 2px 0 rgba(0,0,0,.6))">${rects}</svg>`;
+  }
+
+  /* ---- apply text ---- */
+  $("heroTitle").innerHTML = pixelHeartSVG("#ff2e97", 5) +
+    `<span>${CONFIG.heroTitle}</span>` + pixelHeartSVG("#25f4ee", 5);
+  $("heroSub").textContent = CONFIG.heroSub;
+  $("p1cap").textContent  = CONFIG.person1.city;
+  $("p2cap").textContent  = CONFIG.person2.city;
+  $("p1name").textContent = CONFIG.person1.name;
+  $("p2name").textContent = CONFIG.person2.name;
+
+  /* ---- background: stars + floating pixel hearts ---- */
+  (function sky() {
+    const s = document.querySelector(".sky");
+    for (let i = 0; i < 70; i++) {
+      const d = document.createElement("div"); d.className = "star";
+      d.style.left = Math.random()*100 + "%"; d.style.top = Math.random()*66 + "%";
+      d.style.animationDelay = Math.random()*2.6 + "s"; s.appendChild(d);
+    }
+    const cols = ["#ff2e97","#25f4ee","#ffe14d","#a24bff"];
+    for (let i = 0; i < 12; i++) {
+      const h = document.createElement("div"); h.className = "pheart";
+      h.innerHTML = pixelHeartSVG(cols[i % cols.length], 2 + Math.floor(Math.random()*3));
+      h.style.left = Math.random()*100 + "%";
+      h.style.animationDuration = (9 + Math.random()*9) + "s";
+      h.style.animationDelay = (Math.random()*10) + "s";
+      s.appendChild(h);
+    }
+  })();
+
+  /* ---- NetEase song button ---- */
+  function getSongId() {
+    const raw = (CONFIG.songLink || "").trim();
+    if (!raw) return "";
+    if (/^\d+$/.test(raw)) return raw;
+    const m = raw.match(/(?:id=|song\/)(\d+)/);
+    return m ? m[1] : "";
+  }
+  $("songBtn").addEventListener("click", function () {
+    const id = getSongId();
+    const note = $("songNote");
+    if (!id) {
+      note.classList.add("warn");
+      note.textContent = "!! 先在 CONFIG 里填上歌曲链接";
+      return;
+    }
+    const appUrl = "orpheus://song/" + id;
+    const webUrl = "https://music.163.com/song?id=" + id;
+    let fellBack = false;
+    const fallback = setTimeout(() => { fellBack = true; window.location.href = webUrl; }, 1400);
+    document.addEventListener("visibilitychange", function once() {
+      if (document.hidden) { if (!fellBack) clearTimeout(fallback);
+        document.removeEventListener("visibilitychange", once); }
+    });
+    window.location.href = appUrl;
+  });
+
+  /* ---- live clocks ---- */
+  function tick() {
+    const o = { hour: "2-digit", minute: "2-digit", hour12: false };
+    try {
+      $("p1clock").textContent = new Intl.DateTimeFormat("en-GB", { ...o, timeZone: CONFIG.person1.tz }).format(new Date());
+      $("p2clock").textContent = new Intl.DateTimeFormat("en-GB", { ...o, timeZone: CONFIG.person2.tz }).format(new Date());
+    } catch (e) {}
+  }
+  tick(); setInterval(tick, 15000);
+
+  /* ---- distance ---- */
+  function distanceKm(a, b) {
+    const R = 6371, rad = d => d*Math.PI/180;
+    const dLat = rad(b.lat-a.lat), dLon = rad(b.lon-a.lon);
+    const x = Math.sin(dLat/2)**2 + Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLon/2)**2;
+    return Math.round(2*R*Math.asin(Math.sqrt(x)));
+  }
+  $("distKm").textContent = distanceKm(CONFIG.person1, CONFIG.person2).toLocaleString();
+
+  /* ---- the map ---- */
+  (function buildMap() {
+    const p1 = [CONFIG.person1.lat, CONFIG.person1.lon];
+    const p2 = [CONFIG.person2.lat, CONFIG.person2.lon];
+
+    const map = L.map("map", { scrollWheelZoom: false, zoomControl: true, minZoom: 1, worldCopyJump: true });
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+      attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19,
+    }).addTo(map);
+    map.setView([46, 68], 2);
+
+    function pin(person, color) {
+      return L.divIcon({
+        className: "",
+        html: `<div class="pin">${pixelHeartSVG(color, 4)}<div class="lbl">${person.name} · ${person.city}</div></div>`,
+        iconSize: [120, 60], iconAnchor: [60, 46],
+      });
+    }
+    L.marker(p1, { icon: pin(CONFIG.person1, "#25f4ee") }).addTo(map);
+    L.marker(p2, { icon: pin(CONFIG.person2, "#ff2e97") }).addTo(map);
+
+    function arc(from, to, bend, steps) {
+      const pts = [], mLat=(from[0]+to[0])/2, mLng=(from[1]+to[1])/2;
+      const dLat=to[0]-from[0], dLng=to[1]-from[1];
+      const ctrl=[mLat+dLng*bend, mLng-dLat*bend];
+      for (let i=0;i<=steps;i++){ const t=i/steps, u=1-t;
+        pts.push([u*u*from[0]+2*u*t*ctrl[0]+t*t*to[0], u*u*from[1]+2*u*t*ctrl[1]+t*t*to[1]]); }
+      return pts;
+    }
+    const line = arc(p1, p2, 0.18, 64);
+    L.polyline(line, { color: "#ff2e97", weight: 3, opacity: 1, dashArray: "2 8" }).addTo(map);
+    L.polyline(line, { color: "#ffffff", weight: 1, opacity: .5, dashArray: "2 8" }).addTo(map);
+
+    const mid = line[Math.floor(line.length/2)];
+    L.marker(mid, { interactive: false, icon: L.divIcon({ className: "",
+      html: pixelHeartSVG("#ffe14d", 4), iconSize: [32,28], iconAnchor: [16,14] }) }).addTo(map);
+
+    const fit = () => {
+      map.invalidateSize();
+      const w = map.getSize().x;
+      const lonSpan = Math.abs(p2[1] - p1[1]) || 1;
+      let z = Math.floor(Math.log2((w * 0.5 * 360) / (256 * lonSpan)));
+      z = Math.max(1, Math.min(5, z));
+      map.setView([(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2], z, { animate: false });
+    };
+    map.whenReady(() => setTimeout(fit, 200));
+    window.addEventListener("load", () => setTimeout(fit, 300));
+  })();
+</script>
+</body>
+</html>
