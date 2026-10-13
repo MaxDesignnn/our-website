@@ -1,3 +1,500 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>期中考试，加油</title>
+  <meta name="description" content="给你的小纸条：考试加油，也要好好照顾自己。">
+  <meta property="og:title" content="期中考试，加油！">
+  <meta property="og:description" content="给你的小纸条：考试加油，也要好好照顾自己。">
+  <meta name="theme-color" content="#FAF6EE">
+  <link rel="icon" href="buddy.png">
+  <link rel="apple-touch-icon" href="buddy.png">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-bold.css">
+  <style>
+    :root {
+      --bg: #FAF6EE;
+      --ink: #2B2620;
+      --muted: #8B8174;
+      --line: #E9E1D3;
+      --yellow: #F3B63F;
+      --yellow-deep: #B97E12;
+      --yellow-soft: #FBECC8;
+      --paper: #FFFDF8;
+      color-scheme: light;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "LXGW WenKai", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      font-size: 17px;
+      line-height: 1.9;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    main {
+      max-width: 30rem;
+      margin: 0 auto;
+      padding: max(2.5rem, env(safe-area-inset-top)) 1.5rem 3.5rem;
+    }
+
+    button { font: inherit; color: inherit; }
+
+    /* ---------- hero ---------- */
+    .eyebrow {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.875rem;
+      letter-spacing: 0.2em;
+      margin: 0 0 1.25rem;
+    }
+
+    .hero { display: flex; flex-direction: column; align-items: center; }
+
+    .bubble {
+      position: relative;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      max-width: 17rem;
+      text-align: center;
+      margin-bottom: 0.9rem;
+      box-shadow: 0 2px 10px rgba(80, 60, 20, 0.05);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .bubble::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -7px;
+      width: 12px;
+      height: 12px;
+      background: var(--paper);
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      transform: translateX(-50%) rotate(45deg);
+    }
+    .bubble.swap { opacity: 0; transform: translateY(3px); }
+
+    .buddy {
+      position: relative;
+      border: 0;
+      background: none;
+      padding: 0;
+      cursor: pointer;
+      width: 9.5rem;
+      display: block;
+    }
+    .buddy img {
+      display: block;
+      width: 100%;
+      height: auto;
+      animation: bob 3.2s ease-in-out infinite;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .buddy .shadow {
+      display: block;
+      width: 62%;
+      height: 10px;
+      margin: -12px auto 0;
+      border-radius: 50%;
+      background: rgba(120, 90, 30, 0.13);
+      animation: shadow 3.2s ease-in-out infinite;
+    }
+    .buddy.hop img { animation: hop 0.55s ease-out; }
+    .buddy.hop .shadow { animation: shadow-hop 0.55s ease-out; }
+    .buddy:focus-visible { outline: 2px solid var(--yellow); outline-offset: 6px; border-radius: 1rem; }
+
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    @keyframes shadow {
+      0%, 100% { transform: scaleX(1); opacity: 1; }
+      50% { transform: scaleX(0.9); opacity: 0.75; }
+    }
+    @keyframes hop {
+      0% { transform: translateY(0) rotate(0); }
+      30% { transform: translateY(-22px) rotate(-6deg); }
+      55% { transform: translateY(0) rotate(4deg); }
+      75% { transform: translateY(-5px) rotate(-2deg); }
+      100% { transform: translateY(0) rotate(0); }
+    }
+    @keyframes shadow-hop {
+      30% { transform: scaleX(0.7); opacity: 0.5; }
+    }
+
+    h1 {
+      font-size: 2.3rem;
+      line-height: 1.3;
+      font-weight: 700;
+      text-align: center;
+      margin: 1.75rem 0 0.25rem;
+      letter-spacing: 0.04em;
+    }
+
+    .letter {
+      margin: 1.5rem 0 0;
+      text-align: center;
+    }
+    .letter p { margin: 0 0 0.9rem; }
+    .letter strong { font-weight: 700; background: linear-gradient(transparent 62%, var(--yellow-soft) 62%); }
+
+    /* ---------- sections ---------- */
+    section {
+      border-top: 1px solid var(--line);
+      margin-top: 2.75rem;
+      padding-top: 2.25rem;
+    }
+    h2 {
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.5;
+    }
+    .sub {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.925rem;
+      margin: 0.15rem 0 1.25rem;
+    }
+
+    /* promises */
+    .promises { list-style: none; margin: 0; padding: 0; }
+    .promises li + li { margin-top: 0.5rem; }
+    .promise {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      text-align: left;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 0.875rem;
+      padding: 0.7rem 0.9rem 0.7rem 1.1rem;
+      cursor: pointer;
+      line-height: 1.55;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .promise:hover { border-color: #DCCFB9; }
+    .promise:focus-visible { outline: 2px solid var(--yellow); outline-offset: 2px; }
+    .promise .tick {
+      flex: none;
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 50%;
+      border: 1.5px solid #D6CBB8;
+      display: grid;
+      place-items: center;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+    .promise .tick svg { width: 0.9rem; height: 0.9rem; opacity: 0; transition: opacity 0.2s ease; }
+    .promise[aria-pressed="true"] { background: #FFF8E6; border-color: #F0D9A4; }
+    .promise[aria-pressed="true"] .tick { background: var(--yellow); border-color: var(--yellow); transform: scale(1.05); }
+    .promise[aria-pressed="true"] .tick svg { opacity: 1; }
+
+    .pinky {
+      text-align: center;
+      color: var(--yellow-deep);
+      margin: 1.1rem 0 0;
+      min-height: 1.9em;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .pinky.show { opacity: 1; }
+
+    /* breathing */
+    .breathe-wrap { display: flex; justify-content: center; padding: 0.75rem 0 0.25rem; }
+    .breathe {
+      width: 8.5rem;
+      height: 8.5rem;
+      border-radius: 50%;
+      border: 0;
+      background: var(--yellow-soft);
+      box-shadow: 0 0 0 1px #F1DDAF inset;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 1.05rem;
+      color: var(--ink);
+      transform: scale(0.82);
+      transition-property: transform, background;
+      transition-timing-function: ease-in-out;
+      transition-duration: 0.6s;
+    }
+    .breathe:focus-visible { outline: 2px solid var(--yellow); outline-offset: 6px; }
+    .breathe.in { transform: scale(1.12); background: #F9DF9F; }
+
+    /* song */
+    .song { text-align: center; }
+    .song .sub { margin-bottom: 1.5rem; }
+    .play {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      border: 0;
+      background: var(--ink);
+      color: var(--bg);
+      border-radius: 999px;
+      padding: 0.55rem 1.5rem 0.55rem 0.6rem;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+      box-shadow: 0 6px 18px rgba(43, 38, 32, 0.16);
+    }
+    .play:hover { transform: translateY(-1px); }
+    .play:active { transform: translateY(1px) scale(0.98); }
+    .play:focus-visible { outline: 2px solid var(--yellow); outline-offset: 4px; }
+    .play .disc {
+      width: 2.3rem;
+      height: 2.3rem;
+      border-radius: 50%;
+      background: var(--yellow);
+      display: grid;
+      place-items: center;
+    }
+    .play .disc svg { width: 0.85rem; height: 0.85rem; margin-left: 2px; }
+    .song .hint { color: var(--muted); font-size: 0.85rem; margin: 0.8rem 0 0; }
+
+    footer {
+      text-align: center;
+      margin-top: 3.5rem;
+      padding-top: 2.25rem;
+      border-top: 1px solid var(--line);
+    }
+    footer p { margin: 0; }
+    footer .sign { color: var(--muted); margin-top: 0.35rem; font-size: 0.95rem; }
+    footer .heart { color: #E88E98; }
+
+    @media (max-width: 380px) {
+      body { font-size: 16px; }
+      h1 { font-size: 2rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .buddy img, .buddy .shadow { animation: none !important; }
+      .breathe { transition-duration: 0.01s !important; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">期中考试 · 给你的小纸条</p>
+
+    <div class="hero">
+      <div class="bubble" id="bubble" aria-live="polite">嗨～</div>
+      <button class="buddy" id="buddy" type="button" aria-label="戳一下小黄人">
+        <img src="buddy.png" alt="一个吐着舌头的小黄人" width="328" height="460">
+        <span class="shadow" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <h1>你一定可以的</h1>
+
+    <div class="letter">
+      <p>最近辛苦啦。你有多努力，我都知道。</p>
+      <p>考试只是一次小小的检验，不能决定你是谁。<br>不管结果怎么样，在我这里你永远是<strong>满分</strong>。</p>
+      <p>所以别给自己太大压力。<br>比起分数，我更在意你有没有好好照顾自己。</p>
+    </div>
+
+    <section aria-labelledby="promise-title">
+      <h2 id="promise-title">答应我几件事</h2>
+      <p class="sub">点一下，就算拉钩了。</p>
+      <ul class="promises" id="promises">
+        <li><button class="promise" type="button" aria-pressed="false"><span>好好睡觉，不熬通宵</span><span class="tick" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg></span></button></li>
+        <li><button class="promise" type="button" aria-pressed="false"><span>按时吃饭，咖啡不算饭</span><span class="tick" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg></span></button></li>
+        <li><button class="promise" type="button" aria-pressed="false"><span>记得多喝水</span><span class="tick" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg></span></button></li>
+        <li><button class="promise" type="button" aria-pressed="false"><span>学累了就站起来走一走</span><span class="tick" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg></span></button></li>
+        <li><button class="promise" type="button" aria-pressed="false"><span>身体不舒服就停下来<br>身体比考试重要</span><span class="tick" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg></span></button></li>
+      </ul>
+      <p class="pinky" id="pinky">拉钩上吊，一百年不许变 <span class="heart">♡</span></p>
+    </section>
+
+    <section aria-labelledby="breathe-title">
+      <h2 id="breathe-title">紧张的时候</h2>
+      <p class="sub">跟着圆圈，慢慢呼吸三次。</p>
+      <div class="breathe-wrap">
+        <button class="breathe" id="breathe" type="button" aria-live="polite">开始</button>
+      </div>
+    </section>
+
+    <section class="song" aria-labelledby="song-title">
+      <h2 id="song-title">我们的歌</h2>
+      <p class="sub">累了就戴上耳机，休息一首歌的时间。</p>
+      <button class="play" id="play" type="button">
+        <span class="disc" aria-hidden="true"><svg viewBox="0 0 12 14"><path d="M1 1.2v11.6c0 .6.7 1 1.2.6l9-5.8c.5-.3.5-1 0-1.3l-9-5.8C1.7.2 1 .6 1 1.2z" fill="#2B2620"/></svg></span>
+        播放我们的歌
+      </button>
+      <p class="hint">用网易云音乐打开</p>
+    </section>
+
+    <footer>
+      <p>考完了告诉我，我们视频。</p>
+      <p class="sign">—— 来自汉堡的抱抱 <span class="heart">♡</span></p>
+    </footer>
+  </main>
+
+  <script>
+    const CONFIG = {
+      // 网易云音乐 App：歌曲页 → 分享 → 复制链接，然后粘贴在这里
+      // 例如 "https://music.163.com/song?id=123456"（只填数字 id 也可以）
+      songLink: "https://y.music.163.com/m/song?id=18304573",
+    };
+
+    const bubble = document.getElementById("bubble");
+    const buddy = document.getElementById("buddy");
+
+    function say(text) {
+      bubble.classList.add("swap");
+      setTimeout(() => {
+        bubble.textContent = text;
+        bubble.classList.remove("swap");
+      }, 180);
+    }
+
+    function greeting() {
+      const h = new Date().getHours();
+      if (h < 5) return "这么晚还没睡？睡觉也是复习的一部分！";
+      if (h < 10) return "早上好！早饭吃了吗？";
+      if (h < 14) return "中午啦，先好好吃饭再学～";
+      if (h < 18) return "下午好，学累了就歇一会儿。";
+      if (h < 22) return "晚上好，今天也辛苦啦。";
+      return "不早了，今天就学到这里吧。";
+    }
+    bubble.textContent = greeting();
+
+    const pokes = [
+      "你可以的！",
+      "我相信你。",
+      "深呼吸，慢慢来。",
+      "喝口水吧～",
+      "略略略～",
+      "你已经很棒了。",
+      "累了就休息，不丢人。",
+      "考完请你吃好吃的！",
+      "想我了吗？",
+      "站起来伸个懒腰！",
+    ];
+    let lastPoke = -1;
+    buddy.addEventListener("click", () => {
+      let i;
+      do { i = Math.floor(Math.random() * pokes.length); } while (i === lastPoke);
+      lastPoke = i;
+      say(pokes[i]);
+      buddy.classList.remove("hop");
+      void buddy.offsetWidth;
+      buddy.classList.add("hop");
+    });
+    buddy.addEventListener("animationend", () => buddy.classList.remove("hop"));
+
+    // ---------- promises ----------
+    const STORE_KEY = "midterm-promises";
+    const promiseButtons = [...document.querySelectorAll(".promise")];
+    const pinky = document.getElementById("pinky");
+
+    function loadPromises() {
+      try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; } catch { return []; }
+    }
+    function savePromises() {
+      const state = promiseButtons.map((b) => b.getAttribute("aria-pressed") === "true");
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch {}
+    }
+    function updatePinky(celebrate) {
+      const all = promiseButtons.every((b) => b.getAttribute("aria-pressed") === "true");
+      pinky.classList.toggle("show", all);
+      if (all && celebrate) say("好乖～");
+    }
+
+    loadPromises().forEach((on, i) => {
+      if (promiseButtons[i]) promiseButtons[i].setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    updatePinky(false);
+
+    promiseButtons.forEach((b) => {
+      b.addEventListener("click", () => {
+        const on = b.getAttribute("aria-pressed") !== "true";
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+        savePromises();
+        updatePinky(on);
+      });
+    });
+
+    // ---------- breathing ----------
+    const breathe = document.getElementById("breathe");
+    const IN_MS = 4000, OUT_MS = 6000, ROUNDS = 3;
+    let breathing = false;
+
+    function wait(ms) { return new Promise((r) => setTimeout(r, ms)); }
+
+    breathe.addEventListener("click", async () => {
+      if (breathing) return;
+      breathing = true;
+      for (let n = 0; n < ROUNDS; n++) {
+        breathe.style.transitionDuration = IN_MS + "ms";
+        breathe.textContent = "吸气…";
+        breathe.classList.add("in");
+        await wait(IN_MS);
+        breathe.style.transitionDuration = OUT_MS + "ms";
+        breathe.textContent = "呼气…";
+        breathe.classList.remove("in");
+        await wait(OUT_MS);
+      }
+      breathe.style.transitionDuration = "";
+      breathe.textContent = "好多了吧？";
+      breathing = false;
+      setTimeout(() => { if (!breathing) breathe.textContent = "再来一次"; }, 4000);
+    });
+
+    // ---------- song ----------
+    function parseSong(link) {
+      const s = (link || "").trim();
+      if (!s) return null;
+      if (/^\d+$/.test(s)) return { id: s };
+      const m = s.match(/song\?(?:[^#\s]*&)?id=(\d+)/) || s.match(/song\/(\d+)/) || s.match(/[?&]id=(\d+)/);
+      if (m) return { id: m[1] };
+      const url = s.match(/https?:\/\/[^\s（）()]+/);
+      return url ? { url: url[0] } : null;
+    }
+
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+    document.getElementById("play").addEventListener("click", () => {
+      const song = parseSong(CONFIG.songLink);
+      if (!song) { say("歌还在路上，马上就来～"); return; }
+      if (!song.id) { window.location.href = song.url; return; }
+
+      const web = "https://music.163.com/song?id=" + song.id;
+      if (!isMobile) { window.open(web, "_blank", "noopener"); return; }
+
+      // Try the NetEase app first; fall back to the web page if it didn't open
+      let left = false;
+      const onHide = () => { if (document.hidden) left = true; };
+      document.addEventListener("visibilitychange", onHide);
+      window.location.href = "orpheus://song/" + song.id;
+      setTimeout(() => {
+        document.removeEventListener("visibilitychange", onHide);
+        if (!left && !document.hidden) window.location.href = web;
+      }, 1600);
+    });
+  </script>
+</body>
+</html>
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
